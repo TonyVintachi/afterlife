@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Toxicology Reports for Case {{ case.case_number }}</title>
+    <style>body { font-family: Arial, sans-serif; margin: 20px; } h1, h2 { color: #333; }</style>
+</head>
+<body>
+    <h1>Toxicology Reports for Case {{ case.case_number }}</h1>
+    <p><a href="{% url 'management:autopsy_report_detail' case.id %}">Back to Case Overview</a></p>
+    {% if reports %}
+        <ul>
+        {% for report in reports %}
+            <li>
+                <a href="{% url 'management:toxicology_report_detail' report.id %}">
+                    Report dated {{ report.report_date|date:"Y-m-d"|default:"N/A" }}
+                    (Toxicologist: {{ report.toxicologist_name|default:"N/A" }})
+                    {% if report.is_final %} (Final){% else %} (Draft){% endif %}
+                </a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No toxicology reports found for this case.</p>
+    {% endif %}
+    <!-- Placeholder for a link to add a new toxicology report if needed -->
+    <!-- <p><a href="#">Add New Toxicology Report</a></p> -->
+</body>
+</html>

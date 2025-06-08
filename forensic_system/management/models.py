@@ -93,3 +93,21 @@ class AutopsyReport(models.Model):
 
     def __str__(self):
         return f"Autopsy Report for Case {self.case.case_number}"
+
+class ToxicologyReport(models.Model):
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='toxicology_reports')
+    specimens_received = models.TextField(blank=True, null=True, help_text="e.g., Blood, Urine, Liver tissue")
+    date_specimens_received = models.DateField(null=True, blank=True)
+    requested_by = models.CharField(max_length=255, blank=True, null=True, help_text="Name of Pathologist or SAPS officer")
+    analysis_requested = models.TextField(blank=True, null=True, help_text="e.g., Screen for common drugs of abuse, alcohol")
+    findings_summary = models.TextField(blank=True, null=True)
+    report_date = models.DateField(null=True, blank=True)
+    toxicologist_name = models.CharField(max_length=255, blank=True, null=True)
+    is_final = models.BooleanField(default=False, help_text="Is this the final report?")
+
+    # Consider adding a DateTimeField for when the report was created/updated
+    # date_created = models.DateTimeField(auto_now_add=True)
+    # date_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Toxicology Report for Case {self.case.case_number} (dated {self.report_date or 'N/A'})"

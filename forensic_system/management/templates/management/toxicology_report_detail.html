@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Toxicology Report - Case {{ report.case.case_number }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .report-section { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px;}
+        .field-label { font-weight: bold; color: #444; }
+        .field-value { margin-left: 10px; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Toxicology Report</h1>
+    <div class="report-section">
+        <p><span class="field-label">Case Number:</span> <span class="field-value"><a href="{% url 'management:autopsy_report_detail' report.case.id %}">{{ report.case.case_number }}</a></span></p>
+        <p><span class="field-label">Report Date:</span> <span class="field-value">{{ report.report_date|date:"Y-m-d"|default:"N/A" }}</span></p>
+        <p><span class="field-label">Toxicologist:</span> <span class="field-value">{{ report.toxicologist_name|default:"N/A" }}</span></p>
+        <p><span class="field-label">Status:</span> <span class="field-value">{% if report.is_final %}Final{% else %}Draft{% endif %}</span></p>
+    </div>
+    <div class="report-section">
+        <p><span class="field-label">Specimens Received:</span> <div class="field-value">{{ report.specimens_received|default:"Not specified" }}</div></p>
+        <p><span class="field-label">Date Specimens Received:</span> <span class="field-value">{{ report.date_specimens_received|date:"Y-m-d"|default:"N/A" }}</span></p>
+        <p><span class="field-label">Requested By:</span> <span class="field-value">{{ report.requested_by|default:"N/A" }}</span></p>
+        <p><span class="field-label">Analysis Requested:</span> <div class="field-value">{{ report.analysis_requested|default:"Not specified" }}</div></p>
+    </div>
+    <div class="report-section">
+        <h2>Findings Summary</h2>
+        <div class="field-value">{{ report.findings_summary|default:"No summary provided." }}</div>
+    </div>
+    <p><a href="{% url 'management:toxicology_report_list' report.case.id %}">Back to Toxicology Reports List for Case {{ report.case.case_number }}</a></p>
+    <p><a href="{% url 'management:autopsy_report_detail' report.case.id %}">Back to Case Overview</a></p>
+</body>
+</html>

@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import Case, Body, RFIDTag, AutopsyReport # AutopsyReport already imported
+from .models import Case, Body, RFIDTag, AutopsyReport, ToxicologyReport # Added ToxicologyReport
+from django.urls import reverse
+from django.utils.html import format_html
 
-# Inline Admin for AutopsyReport (Unchanged from previous step)
+# Inline Admin for AutopsyReport (Unchanged)
 class AutopsyReportInline(admin.StackedInline):
     model = AutopsyReport
     can_delete = False
@@ -36,7 +38,7 @@ class AutopsyReportInline(admin.StackedInline):
     readonly_fields = ('date_report_generated',)
 
 @admin.register(Case)
-class CaseAdmin(admin.ModelAdmin): # Unchanged from previous step
+class CaseAdmin(admin.ModelAdmin): # Unchanged
     list_display = ('case_number', 'type_of_case', 'date_reported', 'current_status')
     list_filter = ('type_of_case', 'current_status', 'date_reported')
     search_fields = ('case_number',)
@@ -48,18 +50,17 @@ class CaseAdmin(admin.ModelAdmin): # Unchanged from previous step
     inlines = [AutopsyReportInline]
 
 @admin.register(Body)
-class BodyAdmin(admin.ModelAdmin): # Updated
+class BodyAdmin(admin.ModelAdmin): # Unchanged from its last update
     list_display = ('body_uid', 'name', 'case', 'rfid_tag', 'date_of_death', 'dha_identification_status', 'dha_id_number')
-    list_filter = ('date_of_death', 'dha_identification_status') # Added dha_identification_status
-    search_fields = ('body_uid', 'name', 'case__case_number', 'rfid_tag__tag_id', 'dha_id_number') # Added dha_id_number
+    list_filter = ('date_of_death', 'dha_identification_status')
+    search_fields = ('body_uid', 'name', 'case__case_number', 'rfid_tag__tag_id', 'dha_id_number')
     raw_id_fields = ('case', 'rfid_tag')
-
     fieldsets = (
         ('Core Information', {
             'fields': ('body_uid', 'name', 'case', 'rfid_tag', 'date_of_death')
         }),
         ('Biometric & DHA Identification', {
-            'classes': ('collapse',), # Collapsible section
+            'classes': ('collapse',),
             'fields': (
                 'fingerprint_scan_ref',
                 'dental_records_ref',
@@ -77,8 +78,38 @@ class RFIDTagAdmin(admin.ModelAdmin): # Unchanged
     list_filter = ('status',)
     search_fields = ('tag_id',)
 
+@admin.register(ToxicologyReport) # New admin class
+class ToxicologyReportAdmin(admin.ModelAdmin):
+    list_display = ('case_link', 'report_date', 'toxicologist_name', 'is_final')
+    list_filter = ('report_date', 'is_final', 'toxicologist_name')
+    search_fields = ('case__case_number', 'toxicologist_name', 'specimens_received', 'findings_summary')
+    raw_id_fields = ('case',)
+
+    fieldsets = (
+        ('Case Information', {
+            'fields': ('case',)
+        }),
+        ('Report Details', {
+            'fields': (
+                'report_date',
+                'toxicologist_name',
+                'specimens_received',
+                'date_specimens_received',
+                'requested_by',
+                'analysis_requested',
+                'findings_summary',
+                'is_final'
+            )
+        }),
+    )
+
+    def case_link(self, obj):
+        link = reverse("admin:management_case_change", args=[obj.case.id])
+        return format_html('<a href="{}">{}</a>', link, obj.case)
+    case_link.short_description = 'Case'
+    case_link.admin_order_field = 'case' # Allows sorting by case in admin
+
 # AutopsyReport direct admin registration can remain commented out
 # @admin.register(AutopsyReport)
 # class AutopsyReportAdmin(admin.ModelAdmin):
-#     list_display = ('case', 'autopsy_date', 'pathologist_name', 'is_finalized')
 # ...
