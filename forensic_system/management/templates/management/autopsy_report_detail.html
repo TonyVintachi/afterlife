@@ -7,6 +7,7 @@
         h1 { color: #333; }
         .report-section { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
         .report-section h2 { margin-top: 0; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        .report-section h3 { margin-top: 15px; color: #666; }
         .field-label { font-weight: bold; color: #444; }
         .field-value { margin-left: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top:10px;}
@@ -26,12 +27,35 @@
 
     <div class="report-section">
         <h2>Autopsy Details</h2>
-        <p><span class="field-label">Date of Autopsy:</span> <span class="field-value">{{ case.autopsy_date|date:"Y-m-d"|default:"N/A" }}</span></p>
-        <p><span class="field-label">Pathologist:</span> <span class="field-value">{{ case.pathologist_name|default:"N/A" }}</span></p>
-        <p><span class="field-label">Preliminary Cause of Death:</span></p>
-        <div class="field-value" style="white-space: pre-wrap;">{{ case.cause_of_death_preliminary|default:"Not recorded" }}</div>
-        <p><span class="field-label">Autopsy Notes:</span></p>
-        <div class="field-value" style="white-space: pre-wrap;">{{ case.autopsy_notes|default:"No notes" }}</div>
+        {% if autopsy_report %}
+            <p><span class="field-label">Date of Autopsy:</span> <span class="field-value">{{ autopsy_report.autopsy_date|date:"Y-m-d"|default:"N/A" }}</span></p>
+            <p><span class="field-label">Pathologist:</span> <span class="field-value">{{ autopsy_report.pathologist_name|default:"N/A" }}</span></p>
+            <p><span class="field-label">Preliminary Cause of Death:</span></p>
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.cause_of_death_preliminary|default:"Not recorded" }}</div>
+
+            <h3>Detailed Findings</h3>
+            <p><span class="field-label">External Examination Summary:</span></p>
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.external_examination_summary|default:"Not recorded" }}</div>
+
+            <p><span class="field-label">Internal Examination Summary:</span></p>
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.internal_examination_summary|default:"Not recorded" }}</div>
+
+            <p><span class="field-label">Toxicology Specimens Taken:</span></p>
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.toxicology_specimens_taken|default:"Not recorded" }}</div>
+
+            <p><span class="field-label">Histology Specimens Taken:</span></p>
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.histology_specimens_taken|default:"Not recorded" }}</div>
+
+            <p><span class="field-label">General Autopsy Notes:</span></p> <!-- This was autopsy_notes, kept general title -->
+            <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.autopsy_notes|default:"No notes" }}</div>
+
+            <h3>Report Status</h3>
+            <p><span class="field-label">Report Generated:</span> <span class="field-value">{{ autopsy_report.date_report_generated|date:"Y-m-d H:i"|default:"N/A" }}</span></p>
+            <p><span class="field-label">Finalized:</span> <span class="field-value">{% if autopsy_report.is_finalized %}Yes{% else %}No{% endif %}</span></p>
+            <p><span class="field-label">Finalized By:</span> <span class="field-value">{{ autopsy_report.report_finalized_by.get_full_name|default:autopsy_report.report_finalized_by.username|default:"N/A" }}</span></p>
+        {% else %}
+            <p>No autopsy report details available for this case.</p>
+        {% endif %}
     </div>
 
     <div class="report-section">

@@ -1,14 +1,20 @@
-from django.shortcuts import render, get_object_or_404 # Ensure get_object_or_404 is imported
-from django.http import HttpResponse
-from .models import Case # Ensure Case model is imported
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse # HttpResponse is not used, can be removed if no other view uses it.
+from .models import Case, AutopsyReport # Ensure AutopsyReport is imported
 
 def homepage(request):
     return render(request, 'management/homepage.html', {'message': 'Welcome to the Forensic Information Management System'})
 
 def autopsy_report_detail_view(request, case_id):
     case = get_object_or_404(Case, pk=case_id)
-    # We can add more context here if needed, e.g., related bodies
+    autopsy_report_obj = None
+    try:
+        autopsy_report_obj = case.autopsy_report # Accessing via related_name
+    except AutopsyReport.DoesNotExist:
+        pass # autopsy_report_obj remains None, template will handle
+
     context = {
         'case': case,
+        'autopsy_report': autopsy_report_obj,
     }
     return render(request, 'management/autopsy_report_detail.html', context)
