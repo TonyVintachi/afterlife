@@ -39,6 +39,28 @@ class Body(models.Model):
     date_of_death = models.DateField(blank=True, null=True)
     case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='bodies')
     rfid_tag = models.OneToOneField(RFIDTag, on_delete=models.SET_NULL, blank=True, null=True, related_name='body')
+
+    # New Biometric and DHA fields
+    fingerprint_scan_ref = models.CharField(max_length=255, blank=True, null=True, help_text="Reference/path to fingerprint scan file")
+    dental_records_ref = models.CharField(max_length=255, blank=True, null=True, help_text="Reference/path to dental records")
+    dna_sample_id = models.CharField(max_length=100, blank=True, null=True, help_text="ID for DNA sample taken")
+
+    DHA_STATUS_CHOICES = [
+        ('NOT_SUBMITTED', 'Not Submitted to DHA'),
+        ('PENDING_DHA', 'Pending DHA Response'),
+        ('IDENTIFIED', 'DHA Identified'),
+        ('NO_MATCH', 'DHA No Match Found'),
+        ('MULTIPLE_MATCHES', 'DHA Multiple Potential Matches'),
+    ]
+    dha_identification_status = models.CharField(
+        max_length=20,
+        choices=DHA_STATUS_CHOICES,
+        default='NOT_SUBMITTED',
+        help_text="Status of DHA identification process"
+    )
+    dha_id_number = models.CharField(max_length=50, blank=True, null=True, help_text="SA ID number received from DHA")
+    dha_response_notes = models.TextField(blank=True, null=True, help_text="Notes regarding the DHA identification response")
+
     # Add more fields as needed, e.g., place_of_death, date_of_birth, sex, identifying_marks
 
     def __str__(self):

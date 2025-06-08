@@ -11,7 +11,7 @@
         .field-label { font-weight: bold; color: #444; }
         .field-value { margin-left: 10px; }
         table { width: 100%; border-collapse: collapse; margin-top:10px;}
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; } /* Added vertical-align */
         th { background-color: #f7f7f7; }
     </style>
 </head>
@@ -46,7 +46,7 @@
             <p><span class="field-label">Histology Specimens Taken:</span></p>
             <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.histology_specimens_taken|default:"Not recorded" }}</div>
 
-            <p><span class="field-label">General Autopsy Notes:</span></p> <!-- This was autopsy_notes, kept general title -->
+            <p><span class="field-label">General Autopsy Notes:</span></p>
             <div class="field-value" style="white-space: pre-wrap;">{{ autopsy_report.autopsy_notes|default:"No notes" }}</div>
 
             <h3>Report Status</h3>
@@ -68,6 +68,12 @@
                         <th>Name</th>
                         <th>Date of Death</th>
                         <th>RFID Tag</th>
+                        <th>Fingerprint Ref</th>
+                        <th>Dental Ref</th>
+                        <th>DNA ID</th>
+                        <th>DHA Status</th>
+                        <th>DHA ID No.</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,6 +83,21 @@
                         <td>{{ body.name|default:"Unknown" }}</td>
                         <td>{{ body.date_of_death|date:"Y-m-d"|default:"N/A" }}</td>
                         <td>{{ body.rfid_tag.tag_id|default:"N/A" }}</td>
+                        <td>{{ body.fingerprint_scan_ref|default:"-" }}</td>
+                        <td>{{ body.dental_records_ref|default:"-" }}</td>
+                        <td>{{ body.dna_sample_id|default:"-" }}</td>
+                        <td>{{ body.get_dha_identification_status_display }}</td>
+                        <td>
+                            {% if body.dha_identification_status == 'IDENTIFIED' %}
+                                {{ body.dha_id_number|default:"Not Provided" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            <small>[Simulate DHA Identification Request]</small> <br>
+                            <small>[Enter DHA Response]</small>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
