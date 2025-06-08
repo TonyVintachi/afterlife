@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Autopsy Report - Case {{ case.case_number }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        .report-section { margin-bottom: 20px; border: 1px solid #eee; padding: 15px; border-radius: 5px; }
+        .report-section h2 { margin-top: 0; color: #555; border-bottom: 1px solid #eee; padding-bottom: 5px;}
+        .field-label { font-weight: bold; color: #444; }
+        .field-value { margin-left: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top:10px;}
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f7f7f7; }
+    </style>
+</head>
+<body>
+    <h1>Autopsy Report</h1>
+    <div class="report-section">
+        <h2>Case Information</h2>
+        <p><span class="field-label">Case Number:</span> <span class="field-value">{{ case.case_number }}</span></p>
+        <p><span class="field-label">Date Reported:</span> <span class="field-value">{{ case.date_reported|date:"Y-m-d H:i" }}</span></p>
+        <p><span class="field-label">Type of Case:</span> <span class="field-value">{{ case.get_type_of_case_display }}</span></p>
+        <p><span class="field-label">Current Status:</span> <span class="field-value">{{ case.current_status }}</span></p>
+    </div>
+
+    <div class="report-section">
+        <h2>Autopsy Details</h2>
+        <p><span class="field-label">Date of Autopsy:</span> <span class="field-value">{{ case.autopsy_date|date:"Y-m-d"|default:"N/A" }}</span></p>
+        <p><span class="field-label">Pathologist:</span> <span class="field-value">{{ case.pathologist_name|default:"N/A" }}</span></p>
+        <p><span class="field-label">Preliminary Cause of Death:</span></p>
+        <div class="field-value" style="white-space: pre-wrap;">{{ case.cause_of_death_preliminary|default:"Not recorded" }}</div>
+        <p><span class="field-label">Autopsy Notes:</span></p>
+        <div class="field-value" style="white-space: pre-wrap;">{{ case.autopsy_notes|default:"No notes" }}</div>
+    </div>
+
+    <div class="report-section">
+        <h2>Associated Bodies</h2>
+        {% if case.bodies.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Body UID</th>
+                        <th>Name</th>
+                        <th>Date of Death</th>
+                        <th>RFID Tag</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for body in case.bodies.all %}
+                    <tr>
+                        <td>{{ body.body_uid }}</td>
+                        <td>{{ body.name|default:"Unknown" }}</td>
+                        <td>{{ body.date_of_death|date:"Y-m-d"|default:"N/A" }}</td>
+                        <td>{{ body.rfid_tag.tag_id|default:"N/A" }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No bodies associated with this case.</p>
+        {% endif %}
+    </div>
+
+    <p><a href="{% url 'management:homepage' %}">Back to Homepage</a></p>
+    <!-- We might also want a link to the admin page for this case if the user is authenticated and has perms -->
+    <!-- Example: {% if request.user.is_staff %} <p><a href="{% url 'admin:management_case_change' case.id %}">Edit in Admin</a></p> {% endif %} -->
+
+</body>
+</html>

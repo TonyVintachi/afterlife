@@ -3,9 +3,19 @@ from .models import Case, Body, RFIDTag
 
 @admin.register(Case)
 class CaseAdmin(admin.ModelAdmin):
-    list_display = ('case_number', 'type_of_case', 'date_reported', 'current_status')
-    list_filter = ('type_of_case', 'current_status', 'date_reported')
-    search_fields = ('case_number',)
+    list_display = ('case_number', 'type_of_case', 'date_reported', 'current_status', 'autopsy_date', 'pathologist_name', 'cause_of_death_preliminary')
+    list_filter = ('type_of_case', 'current_status', 'date_reported', 'autopsy_date')
+    search_fields = ('case_number', 'pathologist_name')
+
+    fieldsets = (
+        (None, {
+            'fields': ('case_number', 'type_of_case', 'date_reported', 'current_status')
+        }),
+        ('Autopsy Details', {
+            'classes': ('collapse',), # Collapsible section
+            'fields': ('autopsy_date', 'pathologist_name', 'cause_of_death_preliminary', 'autopsy_notes')
+        }),
+    )
 
 @admin.register(Body)
 class BodyAdmin(admin.ModelAdmin):

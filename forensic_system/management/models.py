@@ -12,6 +12,13 @@ class Case(models.Model):
     ]
     type_of_case = models.CharField(max_length=50, choices=TYPE_CHOICES)
     current_status = models.CharField(max_length=100, default='Pending Initial Examination')
+
+    # New fields for Autopsy Report
+    autopsy_date = models.DateField(null=True, blank=True)
+    pathologist_name = models.CharField(max_length=255, null=True, blank=True)
+    cause_of_death_preliminary = models.TextField(null=True, blank=True)
+    autopsy_notes = models.TextField(null=True, blank=True, help_text="General notes from the autopsy")
+
     # Add more fields as needed, e.g., investigating_officer, police_station
 
     def __str__(self):

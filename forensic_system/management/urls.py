@@ -5,4 +5,5 @@ app_name = 'management'
 
 urlpatterns = [
     path('', views.homepage, name='homepage'),
+    path('case/<int:case_id>/report/autopsy/', views.autopsy_report_detail_view, name='autopsy_report_detail'),
 ]
